@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "143740368759",
+    "project_id": "okuzona",
+    "storage_bucket": "okuzona.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:143740368759:android:925cf29d762c54a35d1372",
+        "android_client_info": {
+          "package_name": "com.example.okuzona"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyClrvVDg_mi1ppQ7AXR62cFh_hE2o_VVHM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
