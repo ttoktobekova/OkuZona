@@ -5,39 +5,69 @@
     android:id="@+id/nav_graph"
     app:startDestination="@id/authFragment">
 
-    <!-- 1. Экран Входа / Регистрации -->
+    <!-- 1. Экран Регистрации (создание аккаунта) -->
     <fragment
         android:id="@+id/authFragment"
         android:name="com.example.okuzona.AuthFragment"
-        android:label="Авторизация"
+        android:label="Регистрация"
         tools:layout="@layout/fragment_auth" >
         <action
             android:id="@+id/action_authFragment_to_bookListFragment"
             app:destination="@id/bookListFragment"
             app:popUpTo="@id/nav_graph"
             app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_authFragment_to_loginFragment"
+            app:destination="@id/loginFragment" />
     </fragment>
 
-    <!-- 2. Экран со списком книг -->
+    <!-- 2. Экран Входа (отдельный экран) -->
+    <fragment
+        android:id="@+id/loginFragment"
+        android:name="com.example.okuzona.LoginFragment"
+        android:label="Вход"
+        tools:layout="@layout/fragment_login" >
+        <action
+            android:id="@+id/action_loginFragment_to_bookListFragment"
+            app:destination="@id/bookListFragment"
+            app:popUpTo="@id/authFragment"
+            app:popUpToInclusive="true" />
+    </fragment>
+
+    <!-- 3. Экран со списком книг (Главный) -->
     <fragment
         android:id="@+id/bookListFragment"
         android:name="com.example.okuzona.BookListFragment"
-        android:label="fragment_book_list"
+        android:label="Книги"
         tools:layout="@layout/fragment_book_list" >
         <action
             android:id="@+id/action_bookListFragment_to_bookReaderFragment"
             app:destination="@id/bookReaderFragment" />
     </fragment>
 
-    <!-- 3. Экран читалки PDF книг -->
+    <!-- 4. Экран читалки PDF книг -->
     <fragment
         android:id="@+id/bookReaderFragment"
         android:name="com.example.okuzona.BookReaderFragment"
-        android:label="fragment_book_reader"
+        android:label="Читалка"
         tools:layout="@layout/fragment_book_reader">
         <argument
             android:name="pdfUrl"
             app:argType="string" />
     </fragment>
+
+    <!-- 5. Экран профиля -->
+    <fragment
+        android:id="@+id/profileFragment"
+        android:name="com.example.okuzona.ProfileFragment"
+        android:label="Профиль"
+        tools:layout="@layout/fragment_profile" />
+
+    <!-- 6. Экран избранного -->
+    <fragment
+        android:id="@+id/favoritesFragment"
+        android:name="com.example.okuzona.FavoritesFragment"
+        android:label="Избранное"
+        tools:layout="@layout/fragment_favorites" />
 
 </navigation>

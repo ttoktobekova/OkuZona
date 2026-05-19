@@ -10,13 +10,13 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="32dp"
-        android:text="Добро пожаловать в OkuZona"
+        android:text="Вход в аккаунт"
         android:textColor="@android:color/black"
         android:textSize="22sp"
         android:textStyle="bold" />
 
     <EditText
-        android:id="@+id/editTextEmail"
+        android:id="@+id/editTextLoginEmail"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"
@@ -24,27 +24,28 @@
         android:inputType="textEmailAddress" />
 
     <EditText
-        android:id="@+id/editTextPassword"
+        android:id="@+id/editTextLoginPassword"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="24dp"
         android:hint="Пароль"
         android:inputType="textPassword" />
 
-    <!-- Сначала кнопка создания аккаунта -->
     <Button
-        android:id="@+id/buttonSignUp"
+        android:id="@+id/buttonDoLogin"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:text="Создать новый аккаунт" />
-
-    <!-- Кнопка входа снизу -->
-    <Button
-        android:id="@+id/buttonSignIn"
-        style="?android:attr/buttonBarButtonStyle"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
         android:text="Войти" />
+
+    <TextView
+        android:id="@+id/textViewBackToRegister"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Нет аккаунта? Зарегистрироваться"
+        android:textColor="@android:color/holo_blue_dark"
+        android:textSize="14sp"
+        android:clickable="true"
+        android:focusable="true" />
 
 </LinearLayout>

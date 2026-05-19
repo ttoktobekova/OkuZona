@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
-import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.firestore.FirebaseFirestore
 
@@ -25,12 +25,20 @@ class BookListFragment : Fragment() {
         val view = inflater.inflate(R.layout.fragment_book_list, container, false)
 
         recyclerView = view.findViewById(R.id.recyclerViewBooks)
-        recyclerView.layoutManager = LinearLayoutManager(requireContext())
 
+        // Используем GridLayoutManager с 2 колонками для отображения книг
+        val spanCount = 2 // Количество колонок
+        val layoutManager = GridLayoutManager(requireContext(), spanCount)
+        recyclerView.layoutManager = layoutManager
+
+        // Обновленный вызов адаптера с полной информацией о книге
         adapter = BookAdapter(bookList) { selectedBook ->
-            // Переход к читалке с передачей аргумента pdfUrl через Bundle
+            // Переход к читалке с передачей всех необходимых аргументов через Bundle
             val bundle = Bundle().apply {
                 putString("pdfUrl", selectedBook.pdfUrl)
+                putString("bookTitle", selectedBook.title)
+                putString("bookAuthor", selectedBook.author)
+                putString("bookImageUrl", selectedBook.imageUrl)
             }
             findNavController().navigate(R.id.action_bookListFragment_to_bookReaderFragment, bundle)
         }
@@ -41,18 +49,26 @@ class BookListFragment : Fragment() {
     }
 
     private fun loadBooksFromFirestore() {
+        // Показываем индикатор загрузки (можно добавить ProgressBar)
+        Toast.makeText(requireContext(), "Загрузка книг...", Toast.LENGTH_SHORT).show()
+
         db.collection("books")
             .get()
             .addOnSuccessListener { documents ->
                 bookList.clear()
-                for (document in documents) {
-                    val book = document.toObject(Book::class.java)
-                    bookList.add(book)
+                if (documents.isEmpty()) {
+                    Toast.makeText(requireContext(), "Книги не найдены", Toast.LENGTH_SHORT).show()
+                } else {
+                    for (document in documents) {
+                        val book = document.toObject(Book::class.java)
+                        bookList.add(book)
+                    }
+                    adapter.notifyDataSetChanged()
+                    Toast.makeText(requireContext(), "Загружено книг: ${bookList.size}", Toast.LENGTH_SHORT).show()
                 }
-                adapter.notifyDataSetChanged()
             }
-            .addOnFailureListener {
-                Toast.makeText(requireContext(), "Ошибка загрузки данных", Toast.LENGTH_SHORT).show()
+            .addOnFailureListener { exception ->
+                Toast.makeText(requireContext(), "Ошибка загрузки данных: ${exception.localizedMessage}", Toast.LENGTH_LONG).show()
             }
     }
 }

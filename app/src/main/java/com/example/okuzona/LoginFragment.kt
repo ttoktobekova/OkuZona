@@ -6,57 +6,51 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
+import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.google.firebase.auth.FirebaseAuth
 
-class AuthFragment : Fragment() {
+class LoginFragment : Fragment() {
 
     private lateinit var auth: FirebaseAuth
     private lateinit var emailInput: EditText
     private lateinit var passwordInput: EditText
-    private lateinit var signInButton: Button
-    private lateinit var signUpButton: Button
+    private lateinit var loginButton: Button
+    private lateinit var backToRegisterButton: TextView
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view = inflater.inflate(R.layout.fragment_auth, container, false)
+        val view = inflater.inflate(R.layout.fragment_login, container, false)
 
         auth = FirebaseAuth.getInstance()
 
-        emailInput = view.findViewById(R.id.editTextEmail)
-        passwordInput = view.findViewById(R.id.editTextPassword)
-        signUpButton = view.findViewById(R.id.buttonSignUp)
-        signInButton = view.findViewById(R.id.buttonSignIn)
+        emailInput = view.findViewById(R.id.editTextLoginEmail)
+        passwordInput = view.findViewById(R.id.editTextLoginPassword)
+        loginButton = view.findViewById(R.id.buttonDoLogin)
+        backToRegisterButton = view.findViewById(R.id.textViewBackToRegister)
 
-        // АВТО-ВХОД: Если старый пользователь уже авторизован, сразу пускаем к книгам
-        if (auth.currentUser != null) {
-            navigateToBooks()
-        }
-
-        // Кнопка СОЗДАНИЯ аккаунта для НОВЫХ пользователей
-        signUpButton.setOnClickListener {
+        loginButton.setOnClickListener {
             val email = emailInput.text.toString().trim()
             val password = passwordInput.text.toString().trim()
 
             if (validateInputs(email, password)) {
-                auth.createUserWithEmailAndPassword(email, password)
+                auth.signInWithEmailAndPassword(email, password)
                     .addOnSuccessListener {
-                        Toast.makeText(requireContext(), "Аккаунт успешно создан!", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(requireContext(), "Вход выполнен успешно!", Toast.LENGTH_SHORT).show()
                         navigateToBooks()
                     }
                     .addOnFailureListener { exception ->
-                        Toast.makeText(requireContext(), "Ошибка регистрации: ${exception.localizedMessage}", Toast.LENGTH_LONG).show()
+                        Toast.makeText(requireContext(), "Ошибка входа: ${exception.localizedMessage}", Toast.LENGTH_LONG).show()
                     }
             }
         }
 
-        // Кнопка ВХОДА - открывает новый экран для входа
-        signInButton.setOnClickListener {
-            findNavController().navigate(R.id.action_authFragment_to_loginFragment)
+        backToRegisterButton.setOnClickListener {
+            findNavController().navigateUp()
         }
 
         return view
@@ -76,7 +70,7 @@ class AuthFragment : Fragment() {
 
     private fun navigateToBooks() {
         findNavController().navigate(
-            R.id.action_authFragment_to_bookListFragment,
+            R.id.action_loginFragment_to_bookListFragment,
             null,
             androidx.navigation.NavOptions.Builder()
                 .setPopUpTo(R.id.authFragment, true)

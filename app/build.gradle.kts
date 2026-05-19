@@ -54,5 +54,14 @@ dependencies {
     implementation("com.google.firebase:firebase-storage")   // Для скачивания файлов книг
     implementation("com.github.iamyashchouhan:AndroidPdfViewer:1.0.3")
     implementation("com.github.bumptech.glide:glide:4.16.0")
+    annotationProcessor("com.github.bumptech.glide:compiler:4.16.0")
+
+    // CardView для карточек
+    implementation("androidx.cardview:cardview:1.0.0")
     implementation("com.google.firebase:firebase-auth")
+    // Material Design (для BottomNavigationView)
+    implementation("com.google.android.material:material:1.9.0")
+    // Navigation Component
+    implementation("androidx.navigation:navigation-fragment-ktx:2.7.5")
+    implementation("androidx.navigation:navigation-ui-ktx:2.7.5")
 }
