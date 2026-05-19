@@ -5,5 +5,4 @@ data class Book(
     val author: String = "",
     val pdfUrl: String = "",
     val imageUrl: String = ""
-
 )

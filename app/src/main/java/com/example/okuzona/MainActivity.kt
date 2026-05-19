@@ -1,6 +1,7 @@
 package com.example.okuzona
 
 import android.os.Bundle
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.setupWithNavController
@@ -16,23 +17,20 @@ class MainActivity : AppCompatActivity() {
 
         bottomNavigationView = findViewById(R.id.bottomNavigationView)
 
-        // Получаем NavController
         val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment)
         val navController = navHostFragment?.findNavController()!!
 
-        // Настраиваем BottomNavigationView с NavController
         bottomNavigationView.setupWithNavController(navController)
 
-        // Следим за изменениями destination, чтобы скрывать/показывать bottom navigation
         navController.addOnDestinationChangedListener { _, destination, _ ->
             when (destination.id) {
-                R.id.authFragment, R.id.loginFragment -> {
-                    // Скрываем bottom navigation на экранах авторизации и входа
-                    bottomNavigationView.visibility = android.view.View.GONE
+                R.id.authFragment, R.id.loginFragment, R.id.splashFragment -> {
+                    // Скрываем bottom navigation на экранах авторизации, входа и заставки
+                    bottomNavigationView.visibility = View.GONE
                 }
                 else -> {
-                    // Показываем bottom navigation на всех остальных экранах
-                    bottomNavigationView.visibility = android.view.View.VISIBLE
+                    // Показываем bottom navigation на всех остальных экранах (список книг, читалка, профиль, избранное)
+                    bottomNavigationView.visibility = View.VISIBLE
                 }
             }
         }

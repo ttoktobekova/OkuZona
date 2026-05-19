@@ -16,8 +16,8 @@ class AuthFragment : Fragment() {
     private lateinit var auth: FirebaseAuth
     private lateinit var emailInput: EditText
     private lateinit var passwordInput: EditText
-    private lateinit var signInButton: Button
     private lateinit var signUpButton: Button
+    private lateinit var signInButton: Button
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -32,10 +32,7 @@ class AuthFragment : Fragment() {
         signUpButton = view.findViewById(R.id.buttonSignUp)
         signInButton = view.findViewById(R.id.buttonSignIn)
 
-        // АВТО-ВХОД: Если старый пользователь уже авторизован, сразу пускаем к книгам
-        if (auth.currentUser != null) {
-            navigateToBooks()
-        }
+        // (Удалён блок авто-входа, чтобы не мешать SplashFragment)
 
         // Кнопка СОЗДАНИЯ аккаунта для НОВЫХ пользователей
         signUpButton.setOnClickListener {
@@ -54,7 +51,7 @@ class AuthFragment : Fragment() {
             }
         }
 
-        // Кнопка ВХОДА - открывает новый экран для входа
+        // Кнопка ВХОДА - открывает экран входа
         signInButton.setOnClickListener {
             findNavController().navigate(R.id.action_authFragment_to_loginFragment)
         }
