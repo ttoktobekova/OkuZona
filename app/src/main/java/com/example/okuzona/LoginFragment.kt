@@ -40,11 +40,11 @@ class LoginFragment : Fragment() {
             if (validateInputs(email, password)) {
                 auth.signInWithEmailAndPassword(email, password)
                     .addOnSuccessListener {
-                        Toast.makeText(requireContext(), "Вход выполнен успешно!", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(requireContext(), "Вход выполнен!", Toast.LENGTH_SHORT).show()
                         navigateToBooks()
                     }
                     .addOnFailureListener { exception ->
-                        Toast.makeText(requireContext(), "Ошибка входа: ${exception.localizedMessage}", Toast.LENGTH_LONG).show()
+                        Toast.makeText(requireContext(), "Ошибка: ${exception.localizedMessage}", Toast.LENGTH_LONG).show()
                     }
             }
         }

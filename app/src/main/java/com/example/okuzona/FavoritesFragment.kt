@@ -1,59 +1,115 @@
 package com.example.okuzona
 
+import android.content.Context
+import android.content.SharedPreferences
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.okuzona.databinding.FragmentFavoritesBinding
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
-/**
- * A simple [Fragment] subclass.
- * Use the [FavoritesFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class FavoritesFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
-    }
+    private var _binding: FragmentFavoritesBinding? = null
+    private val binding get() = _binding!!
+    private lateinit var prefs: SharedPreferences
+    private lateinit var adapter: FavoriteBookAdapter
+    private val favoriteBooks = mutableListOf<Book>()
+    private val gson = Gson()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_favorites, container, false)
+    ): View {
+        _binding = FragmentFavoritesBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment FavoritesFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            FavoritesFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        prefs = requireContext().getSharedPreferences("favorites", Context.MODE_PRIVATE)
+
+        setupRecyclerView()
+        loadFavorites()
+        updateEmptyState()
+    }
+
+    private fun setupRecyclerView() {
+        adapter = FavoriteBookAdapter(
+            books = favoriteBooks,
+            onBookClick = { book ->
+                val bundle = Bundle().apply {
+                    putString("pdfUrl", book.pdfUrl)
+                    putString("bookTitle", book.title)
+                    putString("bookAuthor", book.author)
+                    putString("bookImageUrl", book.imageUrl)
                 }
+                findNavController().navigate(R.id.action_favoritesFragment_to_bookReaderFragment, bundle)
+            },
+            onRemoveClick = { book ->
+                removeFromFavorites(book)
             }
+        )
+        binding.recyclerViewFavorites.layoutManager = LinearLayoutManager(requireContext())
+        binding.recyclerViewFavorites.adapter = adapter
+    }
+
+    private fun loadFavorites() {
+        val json = prefs.getString("favorite_books", "[]")
+        val type = object : TypeToken<List<Book>>() {}.type
+        val books: List<Book> = gson.fromJson(json, type)
+        favoriteBooks.clear()
+        favoriteBooks.addAll(books)
+        adapter.updateBooks(favoriteBooks)
+        updateFavoriteCount()
+    }
+
+    private fun saveFavorites() {
+        val json = gson.toJson(favoriteBooks)
+        prefs.edit().putString("favorite_books", json).apply()
+        updateFavoriteCount()
+        updateEmptyState()
+    }
+
+    private fun removeFromFavorites(book: Book) {
+        favoriteBooks.removeAll { it.bookId == book.bookId }
+        saveFavorites()
+        adapter.updateBooks(favoriteBooks)
+        Toast.makeText(requireContext(), "Книга удалена из избранного", Toast.LENGTH_SHORT).show()
+    }
+
+    private fun updateFavoriteCount() {
+        binding.tvFavoriteCount.text = "${favoriteBooks.size} ${getBooksText(favoriteBooks.size)}"
+    }
+
+    private fun getBooksText(count: Int): String {
+        return when {
+            count % 10 == 1 && count % 100 != 11 -> "книга"
+            count % 10 in 2..4 && (count % 100 < 10 || count % 100 > 20) -> "книги"
+            else -> "книг"
+        }
+    }
+
+    private fun updateEmptyState() {
+        if (favoriteBooks.isEmpty()) {
+            binding.layoutEmpty.visibility = View.VISIBLE
+            binding.recyclerViewFavorites.visibility = View.GONE
+            binding.tvFavoriteCount.visibility = View.GONE
+        } else {
+            binding.layoutEmpty.visibility = View.GONE
+            binding.recyclerViewFavorites.visibility = View.VISIBLE
+            binding.tvFavoriteCount.visibility = View.VISIBLE
+        }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }

@@ -43,15 +43,25 @@ class BookListFragment : Fragment() {
         val spanCount = 2
         binding.recyclerViewBooks.layoutManager = GridLayoutManager(requireContext(), spanCount)
 
-        adapter = BookAdapter(emptyList()) { selectedBook ->
-            val bundle = Bundle().apply {
-                putString("pdfUrl", selectedBook.pdfUrl)
-                putString("bookTitle", selectedBook.title)
-                putString("bookAuthor", selectedBook.author)
-                putString("bookImageUrl", selectedBook.imageUrl)
+        adapter = BookAdapter(
+            books = emptyList(),
+            onBookClick = { selectedBook ->
+                val bundle = Bundle().apply {
+                    putString("pdfUrl", selectedBook.pdfUrl)
+                    putString("bookTitle", selectedBook.title)
+                    putString("bookAuthor", selectedBook.author)
+                    putString("bookImageUrl", selectedBook.imageUrl)
+                }
+                findNavController().navigate(R.id.action_bookListFragment_to_bookReaderFragment, bundle)
+            },
+            onFavoriteToggle = { book, isFavorite ->
+                if (isFavorite) {
+                    Toast.makeText(requireContext(), "Добавлено в избранное", Toast.LENGTH_SHORT).show()
+                } else {
+                    Toast.makeText(requireContext(), "Удалено из избранного", Toast.LENGTH_SHORT).show()
+                }
             }
-            findNavController().navigate(R.id.action_bookListFragment_to_bookReaderFragment, bundle)
-        }
+        )
         binding.recyclerViewBooks.adapter = adapter
 
         setupSearch()
@@ -82,7 +92,7 @@ class BookListFragment : Fragment() {
             }
         }
 
-        adapter.updateBooks(filtered)
+        adapter.updateBooks(filtered, requireContext())
 
         // Показываем сообщение, если ничего не найдено и поиск не пустой
         if (filtered.isEmpty() && query.isNotEmpty()) {
@@ -109,9 +119,11 @@ class BookListFragment : Fragment() {
                     binding.recyclerViewBooks.visibility = View.GONE
                 } else {
                     for (document in documents) {
-                        val book = document.toObject(Book::class.java)
+                        val book = document.toObject(Book::class.java).copy(bookId = document.id)
                         allBooks.add(book)
                     }
+                    // Обновляем адаптер с передачей context
+                    adapter.updateBooks(allBooks, requireContext())
                     filterBooks(binding.searchEditText.text.toString())
                     Toast.makeText(requireContext(), "Загружено книг: ${allBooks.size}", Toast.LENGTH_SHORT).show()
                 }

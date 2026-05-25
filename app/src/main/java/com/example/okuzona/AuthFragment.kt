@@ -1,5 +1,7 @@
 package com.example.okuzona
 
+import android.content.Context
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -14,6 +16,8 @@ import com.google.firebase.auth.FirebaseAuth
 class AuthFragment : Fragment() {
 
     private lateinit var auth: FirebaseAuth
+    private lateinit var prefs: SharedPreferences
+    private lateinit var nameInput: EditText
     private lateinit var emailInput: EditText
     private lateinit var passwordInput: EditText
     private lateinit var signUpButton: Button
@@ -26,32 +30,36 @@ class AuthFragment : Fragment() {
         val view = inflater.inflate(R.layout.fragment_auth, container, false)
 
         auth = FirebaseAuth.getInstance()
+        prefs = requireContext().getSharedPreferences("user_data", Context.MODE_PRIVATE)
 
+        nameInput = view.findViewById(R.id.editTextName)
         emailInput = view.findViewById(R.id.editTextEmail)
         passwordInput = view.findViewById(R.id.editTextPassword)
         signUpButton = view.findViewById(R.id.buttonSignUp)
         signInButton = view.findViewById(R.id.buttonSignIn)
 
-        // (Удалён блок авто-входа, чтобы не мешать SplashFragment)
-
-        // Кнопка СОЗДАНИЯ аккаунта для НОВЫХ пользователей
         signUpButton.setOnClickListener {
+            val name = nameInput.text.toString().trim()
             val email = emailInput.text.toString().trim()
             val password = passwordInput.text.toString().trim()
 
-            if (validateInputs(email, password)) {
+            if (validateInputs(name, email, password)) {
                 auth.createUserWithEmailAndPassword(email, password)
-                    .addOnSuccessListener {
-                        Toast.makeText(requireContext(), "Аккаунт успешно создан!", Toast.LENGTH_SHORT).show()
-                        navigateToBooks()
+                    .addOnSuccessListener { result ->
+                        val user = result.user
+                        if (user != null) {
+                            // Сохраняем имя локально с ключом по uid
+                            prefs.edit().putString("user_name_${user.uid}", name).apply()
+                            Toast.makeText(requireContext(), "Аккаунт создан!", Toast.LENGTH_SHORT).show()
+                            navigateToBooks()
+                        }
                     }
                     .addOnFailureListener { exception ->
-                        Toast.makeText(requireContext(), "Ошибка регистрации: ${exception.localizedMessage}", Toast.LENGTH_LONG).show()
+                        Toast.makeText(requireContext(), "Ошибка: ${exception.localizedMessage}", Toast.LENGTH_LONG).show()
                     }
             }
         }
 
-        // Кнопка ВХОДА - открывает экран входа
         signInButton.setOnClickListener {
             findNavController().navigate(R.id.action_authFragment_to_loginFragment)
         }
@@ -59,7 +67,11 @@ class AuthFragment : Fragment() {
         return view
     }
 
-    private fun validateInputs(email: String, password: String): Boolean {
+    private fun validateInputs(name: String, email: String, password: String): Boolean {
+        if (name.isEmpty()) {
+            Toast.makeText(requireContext(), "Введите имя", Toast.LENGTH_SHORT).show()
+            return false
+        }
         if (email.isEmpty()) {
             Toast.makeText(requireContext(), "Введите Email", Toast.LENGTH_SHORT).show()
             return false

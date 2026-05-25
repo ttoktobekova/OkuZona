@@ -1,11 +1,15 @@
 package com.example.okuzona
 
+import android.animation.Animator
+import android.animation.AnimatorListenerAdapter
+import android.animation.ObjectAnimator
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.AccelerateDecelerateInterpolator
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.google.firebase.auth.FirebaseAuth
@@ -29,23 +33,50 @@ class SplashFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         auth = FirebaseAuth.getInstance()
 
-        // Задержка 2 секунды (чтобы пользователь успел увидеть лого)
+        // Анимация появления элементов
+        animateSplash()
+
+        // Задержка перед переходом
         Handler(Looper.getMainLooper()).postDelayed({
             if (isAdded) {
-                navigateBasedOnAuth()
+                if (auth.currentUser == null) {
+                    findNavController().navigate(R.id.action_splashFragment_to_authFragment)
+                } else {
+                    findNavController().navigate(R.id.action_splashFragment_to_bookListFragment)
+                }
             }
-        }, 1000)
+        }, 2500)
     }
 
-    private fun navigateBasedOnAuth() {
-        val currentUser = auth.currentUser
-        if (currentUser == null) {
-            // Пользователь не авторизован → идём на экран регистрации/входа
-            findNavController().navigate(R.id.action_splashFragment_to_authFragment)
-        } else {
-            // Пользователь уже авторизован → сразу на главный экран (список книг)
-            findNavController().navigate(R.id.action_splashFragment_to_bookListFragment)
-        }
+    private fun animateSplash() {
+        // Анимация для логотипа: масштабирование и прозрачность
+        binding.imageSplash.alpha = 0f
+        binding.imageSplash.scaleX = 0.8f
+        binding.imageSplash.scaleY = 0.8f
+
+        binding.imageSplash.animate()
+            .alpha(1f)
+            .scaleX(1f)
+            .scaleY(1f)
+            .setDuration(800)
+            .setInterpolator(AccelerateDecelerateInterpolator())
+            .start()
+
+        // Анимация для текста "Добро пожаловать в"
+        binding.textWelcome.alpha = 0f
+        binding.textWelcome.animate()
+            .alpha(1f)
+            .setDuration(600)
+            .setStartDelay(300)
+            .start()
+
+        // Анимация для названия приложения
+        binding.textAppName.alpha = 0f
+        binding.textAppName.animate()
+            .alpha(1f)
+            .setDuration(800)
+            .setStartDelay(500)
+            .start()
     }
 
     override fun onDestroyView() {

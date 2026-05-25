@@ -7,9 +7,9 @@
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
-        android:icon="@drawable/img_main_app"
+        android:icon="@drawable/super_img"
         android:label="@string/app_name"
-        android:roundIcon="@drawable/img_main_app"
+        android:roundIcon="@drawable/super_img"
         android:supportsRtl="true"
         android:theme="@style/Theme.OkuZona">
         <activity

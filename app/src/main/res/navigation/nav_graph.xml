@@ -73,12 +73,22 @@
         android:id="@+id/profileFragment"
         android:name="com.example.okuzona.ProfileFragment"
         android:label="Профиль"
-        tools:layout="@layout/fragment_profile" />
+        tools:layout="@layout/fragment_profile">
+        <action
+            android:id="@+id/action_profileFragment_to_authFragment"
+            app:destination="@id/authFragment"
+            app:popUpTo="@id/nav_graph"
+            app:popUpToInclusive="true" />
+    </fragment>
 
     <fragment
         android:id="@+id/favoritesFragment"
         android:name="com.example.okuzona.FavoritesFragment"
         android:label="Избранное"
-        tools:layout="@layout/fragment_favorites" />
+        tools:layout="@layout/fragment_favorites">
+        <action
+            android:id="@+id/action_favoritesFragment_to_bookReaderFragment"
+            app:destination="@id/bookReaderFragment" />
+    </fragment>
 
 </navigation>
