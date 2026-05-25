@@ -3,55 +3,142 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/white">
+    android:background="#F8F9FA">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="16dp">
+        android:padding="24dp">
 
-        <ImageView
-            android:layout_width="100dp"
-            android:layout_height="100dp"
+        <!-- Аватар с градиентным ободком -->
+        <FrameLayout
+            android:layout_width="110dp"
+            android:layout_height="110dp"
             android:layout_gravity="center"
-            android:src="@drawable/ic_account_circle"
-            android:contentDescription="Аватар" />
+            android:layout_marginBottom="12dp">
 
-        <!-- Имя (только текст) -->
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="Имя:"
-            android:textStyle="bold" />
-        <TextView
-            android:id="@+id/tvProfileName"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            android:textSize="16sp"
-            android:textColor="@android:color/black" />
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/avatar_border"
+                android:alpha="0.3" />
 
-        <!-- Email (только текст) -->
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Email:"
-            android:textStyle="bold" />
-        <TextView
-            android:id="@+id/tvProfileEmail"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="24dp"
-            android:textSize="16sp"
-            android:textColor="@android:color/black" />
+            <androidx.cardview.widget.CardView
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_gravity="center"
+                app:cardCornerRadius="50dp"
+                app:cardElevation="6dp">
 
-        <View
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:src="@drawable/ic_account_circle"
+                    android:contentDescription="Аватар"
+                    android:padding="12dp"
+                    android:background="#E8EAED" />
+
+            </androidx.cardview.widget.CardView>
+        </FrameLayout>
+
+        <!-- Карточка имени -->
+        <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="@android:color/darker_gray"
-            android:layout_marginVertical="16dp" />
+            android:layout_height="wrap_content"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="2dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="12dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Имя:"
+                    android:textStyle="bold"
+                    android:textColor="#6750A4"
+                    android:textSize="13sp"
+                    android:letterSpacing="0.05" />
+
+                <TextView
+                    android:id="@+id/tvProfileName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:textSize="20sp"
+                    android:textColor="#1C1B1F"
+                    android:fontFamily="sans-serif-medium" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Карточка email -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="2dp"
+            android:layout_marginBottom="20dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Email:"
+                    android:textStyle="bold"
+                    android:textColor="#6750A4"
+                    android:textSize="13sp"
+                    android:letterSpacing="0.05" />
+
+                <TextView
+                    android:id="@+id/tvProfileEmail"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:textSize="16sp"
+                    android:textColor="#1C1B1F" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Разделитель с текстом -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginVertical="16dp">
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:layout_weight="1"
+                android:background="#E0E0E0" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="НАСТРОЙКИ"
+                android:textSize="12sp"
+                android:textColor="#9E9E9E"
+                android:letterSpacing="0.1"
+                android:paddingHorizontal="16dp" />
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:layout_weight="1"
+                android:background="#E0E0E0" />
+        </LinearLayout>
 
         <!-- Язык приложения (вертикальные радиокнопки) -->
         <TextView
@@ -59,48 +146,72 @@
             android:layout_height="wrap_content"
             android:text="Язык приложения"
             android:textStyle="bold"
+            android:textColor="#1C1B1F"
+            android:textSize="15sp"
             android:layout_marginBottom="8dp" />
 
-        <RadioGroup
-            android:id="@+id/radioGroupLanguage"
+        <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            app:cardCornerRadius="16dp"
+            app:cardElevation="1dp"
+            android:layout_marginBottom="20dp">
 
-            <RadioButton
-                android:id="@+id/radioRussian"
-                android:layout_width="wrap_content"
+            <RadioGroup
+                android:id="@+id/radioGroupLanguage"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Русский"
-                android:layout_marginBottom="8dp" />
+                android:orientation="vertical"
+                android:padding="12dp">
 
-            <RadioButton
-                android:id="@+id/radioKyrgyz"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Кыргызча" />
-        </RadioGroup>
+                <com.google.android.material.radiobutton.MaterialRadioButton
+                    android:id="@+id/radioRussian"
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:text="Русский"
+                    android:textSize="16sp"
+                    android:gravity="center_vertical"
+                    android:paddingStart="12dp" />
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="@android:color/darker_gray"
-            android:layout_marginVertical="16dp" />
+                <com.google.android.material.radiobutton.MaterialRadioButton
+                    android:id="@+id/radioKyrgyz"
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:text="Кыргызча"
+                    android:textSize="16sp"
+                    android:gravity="center_vertical"
+                    android:paddingStart="12dp" />
 
-        <Button
+            </RadioGroup>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Кнопки в современном стиле -->
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btnDeleteAccount"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="56dp"
             android:text="Удалить аккаунт"
-            android:backgroundTint="#3F51B5"
-            android:layout_marginBottom="8dp" />
+            android:layout_marginBottom="12dp"
+            app:icon="@android:drawable/ic_menu_delete"
+            app:iconGravity="textStart"
+            app:iconPadding="12dp"
+            app:cornerRadius="28dp"
+            app:backgroundTint="#DC362E"
+            style="@style/Widget.Material3.Button" />
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btnAppInfo"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="56dp"
             android:text="Информация о приложении"
-            style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
+            app:icon="@android:drawable/ic_menu_info_details"
+            app:iconGravity="textStart"
+            app:iconPadding="12dp"
+            app:cornerRadius="28dp"
+            style="@style/Widget.Material3.Button.OutlinedButton"
+            app:strokeColor="#6750A4"
+            app:strokeWidth="2dp"
+            android:textColor="#6750A4" />
 
     </LinearLayout>
 </ScrollView>
