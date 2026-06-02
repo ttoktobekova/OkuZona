@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.ProgressBar
+import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
@@ -14,6 +15,7 @@ import com.ymg.pdf.viewer.PDFView
 
 class BookReaderFragment : Fragment() {
 
+    private lateinit var ww: TextView
     private lateinit var pdfView: PDFView
     private lateinit var progressBar: ProgressBar
     private lateinit var buttonBack: ImageButton
