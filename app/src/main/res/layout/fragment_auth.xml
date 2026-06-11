@@ -11,7 +11,7 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="20dp"
         android:text="Добро пожаловать в OkuZona"
-        android:textColor="#1E88E5"
+        android:textColor="@color/blue"
         android:textSize="22sp"
         android:textStyle="bold" />
     <ImageView

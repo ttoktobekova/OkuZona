@@ -57,6 +57,9 @@
         <action
             android:id="@+id/action_bookListFragment_to_bookReaderFragment"
             app:destination="@id/bookReaderFragment" />
+        <action
+            android:id="@+id/action_bookListFragment_to_informationFragment"
+            app:destination="@id/informationFragment" />
     </fragment>
 
     <fragment
@@ -66,6 +69,15 @@
         tools:layout="@layout/fragment_book_reader">
         <argument
             android:name="pdfUrl"
+            app:argType="string" />
+        <argument
+            android:name="bookTitle"
+            app:argType="string" />
+        <argument
+            android:name="bookAuthor"
+            app:argType="string" />
+        <argument
+            android:name="bookImageUrl"
             app:argType="string" />
     </fragment>
 
@@ -89,6 +101,32 @@
         <action
             android:id="@+id/action_favoritesFragment_to_bookReaderFragment"
             app:destination="@id/bookReaderFragment" />
+        <action
+            android:id="@+id/action_favoritesFragment_to_informationFragment"
+            app:destination="@id/informationFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/informationFragment"
+        android:name="com.example.okuzona.InformationFragment"
+        android:label="Информация о книге"
+        tools:layout="@layout/fragment_information">
+        <action
+            android:id="@+id/action_informationFragment_to_bookReaderFragment"
+            app:destination="@id/bookReaderFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/cartFragment"
+        android:name="com.example.okuzona.CartFragment"
+        android:label="Корзина"
+        tools:layout="@layout/fragment_cart">
+        <action
+            android:id="@+id/action_cartFragment_to_informationFragment"
+            app:destination="@id/informationFragment" />
+        <action
+            android:id="@+id/action_cartFragment_to_bookListFragment"
+            app:destination="@id/bookListFragment" />
     </fragment>
 
 </navigation>

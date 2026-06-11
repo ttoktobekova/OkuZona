@@ -9,7 +9,12 @@
         android:icon="@android:drawable/ic_menu_save"
         android:title="Избранное" />
     <item
+        android:id="@+id/cartFragment"
+        android:icon="@android:drawable/ic_menu_edit"
+        android:title="Корзина" />
+    <item
         android:id="@id/profileFragment"
         android:icon="@android:drawable/ic_menu_more"
         android:title="Профиль" />
+
 </menu>

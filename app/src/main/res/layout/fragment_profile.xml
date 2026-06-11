@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F8F9FA">
+    android:background="#E8F0FE">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -11,12 +11,12 @@
         android:orientation="vertical"
         android:padding="24dp">
 
-        <!-- Аватар с градиентным ободком -->
+        <!-- Аватар с градиентом -->
         <FrameLayout
             android:layout_width="110dp"
             android:layout_height="110dp"
             android:layout_gravity="center"
-            android:layout_marginBottom="12dp">
+            android:layout_marginBottom="16dp">
 
             <View
                 android:layout_width="match_parent"
@@ -29,7 +29,7 @@
                 android:layout_height="100dp"
                 android:layout_gravity="center"
                 app:cardCornerRadius="50dp"
-                app:cardElevation="6dp">
+                app:cardElevation="8dp">
 
                 <ImageView
                     android:layout_width="match_parent"
@@ -46,34 +46,34 @@
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:cardCornerRadius="16dp"
-            app:cardElevation="2dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="12dp">
+            app:cardCornerRadius="20dp"
+            app:cardElevation="4dp"
+            android:layout_marginBottom="16dp"
+            app:cardBackgroundColor="#FFFFFF">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:padding="16dp">
+                android:padding="20dp">
 
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Имя:"
+                    android:text="Имя"
                     android:textStyle="bold"
-                    android:textColor="#6750A4"
-                    android:textSize="13sp"
-                    android:letterSpacing="0.05" />
+                    android:textColor="#1A237E"
+                    android:textSize="12sp"
+                    android:letterSpacing="0.1" />
 
                 <TextView
                     android:id="@+id/tvProfileName"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
-                    android:textSize="20sp"
-                    android:textColor="#1C1B1F"
-                    android:fontFamily="sans-serif-medium" />
+                    android:layout_marginTop="8dp"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:textColor="#1C1B1F" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
@@ -81,124 +81,52 @@
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:cardCornerRadius="16dp"
-            app:cardElevation="2dp"
-            android:layout_marginBottom="20dp">
+            app:cardCornerRadius="20dp"
+            app:cardElevation="4dp"
+            android:layout_marginBottom="24dp"
+            app:cardBackgroundColor="#FFFFFF">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:padding="16dp">
+                android:padding="20dp">
 
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Email:"
+                    android:text="Email"
                     android:textStyle="bold"
-                    android:textColor="#6750A4"
-                    android:textSize="13sp"
-                    android:letterSpacing="0.05" />
+                    android:textColor="#1A237E"
+                    android:textSize="12sp"
+                    android:letterSpacing="0.1" />
 
                 <TextView
                     android:id="@+id/tvProfileEmail"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
-                    android:textSize="16sp"
+                    android:layout_marginTop="8dp"
+                    android:textSize="14sp"
                     android:textColor="#1C1B1F" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
-        <!-- Разделитель с текстом -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:layout_marginVertical="16dp">
-
-            <View
-                android:layout_width="0dp"
-                android:layout_height="1dp"
-                android:layout_weight="1"
-                android:background="#E0E0E0" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="НАСТРОЙКИ"
-                android:textSize="12sp"
-                android:textColor="#9E9E9E"
-                android:letterSpacing="0.1"
-                android:paddingHorizontal="16dp" />
-
-            <View
-                android:layout_width="0dp"
-                android:layout_height="1dp"
-                android:layout_weight="1"
-                android:background="#E0E0E0" />
-        </LinearLayout>
-
-        <!-- Язык приложения (вертикальные радиокнопки) -->
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Язык приложения"
-            android:textStyle="bold"
-            android:textColor="#1C1B1F"
-            android:textSize="15sp"
-            android:layout_marginBottom="8dp" />
-
-        <com.google.android.material.card.MaterialCardView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:cardCornerRadius="16dp"
-            app:cardElevation="1dp"
-            android:layout_marginBottom="20dp">
-
-            <RadioGroup
-                android:id="@+id/radioGroupLanguage"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="12dp">
-
-                <com.google.android.material.radiobutton.MaterialRadioButton
-                    android:id="@+id/radioRussian"
-                    android:layout_width="match_parent"
-                    android:layout_height="56dp"
-                    android:text="Русский"
-                    android:textSize="16sp"
-                    android:gravity="center_vertical"
-                    android:paddingStart="12dp" />
-
-                <com.google.android.material.radiobutton.MaterialRadioButton
-                    android:id="@+id/radioKyrgyz"
-                    android:layout_width="match_parent"
-                    android:layout_height="56dp"
-                    android:text="Кыргызча"
-                    android:textSize="16sp"
-                    android:gravity="center_vertical"
-                    android:paddingStart="12dp" />
-
-            </RadioGroup>
-        </com.google.android.material.card.MaterialCardView>
-
-        <!-- Кнопки в современном стиле -->
+        <!-- Кнопка выхода -->
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnDeleteAccount"
+            android:id="@+id/btnLogout"
             android:layout_width="match_parent"
             android:layout_height="56dp"
-            android:text="Удалить аккаунт"
+            android:text="Выйти из аккаунта"
             android:layout_marginBottom="12dp"
-            app:icon="@android:drawable/ic_menu_delete"
+            app:icon="@android:drawable/ic_menu_close_clear_cancel"
             app:iconGravity="textStart"
-            app:iconPadding="12dp"
+            app:iconPadding="16dp"
             app:cornerRadius="28dp"
             app:backgroundTint="#DC362E"
-            style="@style/Widget.Material3.Button" />
+            app:iconTint="#FFFFFF"
+            android:textColor="#FFFFFF" />
 
+        <!-- Кнопка информации -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnAppInfo"
             android:layout_width="match_parent"
@@ -206,12 +134,13 @@
             android:text="Информация о приложении"
             app:icon="@android:drawable/ic_menu_info_details"
             app:iconGravity="textStart"
-            app:iconPadding="12dp"
+            app:iconPadding="16dp"
             app:cornerRadius="28dp"
             style="@style/Widget.Material3.Button.OutlinedButton"
-            app:strokeColor="#6750A4"
+            app:strokeColor="#1A237E"
             app:strokeWidth="2dp"
-            android:textColor="#6750A4" />
+            android:textColor="#1A237E"
+            app:iconTint="#1A237E" />
 
     </LinearLayout>
 </ScrollView>

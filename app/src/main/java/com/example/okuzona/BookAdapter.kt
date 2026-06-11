@@ -11,6 +11,8 @@ import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 
@@ -23,9 +25,13 @@ class BookAdapter(
     private lateinit var prefs: SharedPreferences
     private val gson = Gson()
     private var favoriteIds = mutableSetOf<String>()
+    private lateinit var auth: FirebaseAuth
+    private lateinit var db: FirebaseFirestore
 
     fun updateBooks(newBooks: List<Book>, context: Context) {
         prefs = context.getSharedPreferences("favorites", Context.MODE_PRIVATE)
+        auth = FirebaseAuth.getInstance()
+        db = FirebaseFirestore.getInstance()
         loadFavoriteIds()
         val diffCallback = BookDiffCallback(books, newBooks)
         val diffResult = DiffUtil.calculateDiff(diffCallback)
@@ -34,10 +40,50 @@ class BookAdapter(
     }
 
     private fun loadFavoriteIds() {
-        val json = prefs.getString("favorite_books", "[]")
-        val type = object : TypeToken<List<Book>>() {}.type
-        val favorites: List<Book> = gson.fromJson(json, type)
-        favoriteIds = favorites.map { it.bookId }.toMutableSet()
+        val userId = auth.currentUser?.uid
+        if (userId == null) {
+            // Если пользователь не авторизован, загружаем из локального хранилища
+            val json = prefs.getString("favorite_books", "[]")
+            val type = object : TypeToken<List<Book>>() {}.type
+            val favorites: List<Book> = gson.fromJson(json, type)
+            favoriteIds = favorites.map { it.bookId }.toMutableSet()
+        } else {
+            // Загружаем из Firestore
+            loadFavoritesFromFirestore(userId)
+        }
+    }
+
+    private fun loadFavoritesFromFirestore(userId: String) {
+        db.collection("favorites").document(userId).get()
+            .addOnSuccessListener { document ->
+                if (document.exists()) {
+                    val favoriteBooksIds = document.get("favoriteBooks") as? List<String> ?: emptyList()
+                    favoriteIds = favoriteBooksIds.toMutableSet()
+
+                    // Сохраняем в локальное хранилище для кэша
+                    saveFavoriteIdsToLocal()
+
+                    // Обновляем отображение
+                    notifyDataSetChanged()
+                } else {
+                    favoriteIds = mutableSetOf()
+                    saveFavoriteIdsToLocal()
+                    notifyDataSetChanged()
+                }
+            }
+            .addOnFailureListener {
+                // При ошибке загружаем из локального хранилища
+                val json = prefs.getString("favorite_books", "[]")
+                val type = object : TypeToken<List<Book>>() {}.type
+                val favorites: List<Book> = gson.fromJson(json, type)
+                favoriteIds = favorites.map { it.bookId }.toMutableSet()
+            }
+    }
+
+    private fun saveFavoriteIdsToLocal() {
+        val favoriteBooks = books.filter { favoriteIds.contains(it.bookId) }
+        val json = gson.toJson(favoriteBooks)
+        prefs.edit().putString("favorite_books", json).apply()
     }
 
     private fun isFavorite(bookId: String): Boolean = favoriteIds.contains(bookId)
@@ -46,6 +92,8 @@ class BookAdapter(
         if (!favoriteIds.contains(book.bookId)) {
             favoriteIds.add(book.bookId)
             saveFavorites()
+            // Сохраняем в Firestore
+            saveFavoriteToFirestore(book.bookId, true)
         }
     }
 
@@ -53,27 +101,60 @@ class BookAdapter(
         if (favoriteIds.contains(bookId)) {
             favoriteIds.remove(bookId)
             saveFavorites()
+            // Удаляем из Firestore
+            saveFavoriteToFirestore(bookId, false)
         }
     }
 
     private fun saveFavorites() {
-        val json = prefs.getString("favorite_books", "[]")
-        val type = object : TypeToken<List<Book>>() {}.type
-        val currentFavorites: List<Book> = gson.fromJson(json, type)
-        val currentFavoritesMutable: MutableList<Book> = currentFavorites.toMutableList()
+        // Сохраняем в локальное хранилище
+        val favoriteBooks = books.filter { favoriteIds.contains(it.bookId) }
+        val json = gson.toJson(favoriteBooks)
+        prefs.edit().putString("favorite_books", json).apply()
+    }
 
-        val updatedFavorites = currentFavoritesMutable.filter { favoriteIds.contains(it.bookId) }
-        val newFavorites = books.filter { favoriteIds.contains(it.bookId) && !updatedFavorites.contains(it) }
-        val finalFavorites = updatedFavorites + newFavorites
+    private fun saveFavoriteToFirestore(bookId: String, isAdding: Boolean) {
+        val userId = auth.currentUser?.uid ?: return
 
-        val newJson = gson.toJson(finalFavorites)
-        prefs.edit().putString("favorite_books", newJson).apply()
+        db.collection("favorites").document(userId).get()
+            .addOnSuccessListener { document ->
+                val currentFavorites = if (document.exists()) {
+                    (document.get("favoriteBooks") as? List<String>)?.toMutableList() ?: mutableListOf()
+                } else {
+                    mutableListOf()
+                }
+
+                if (isAdding && !currentFavorites.contains(bookId)) {
+                    currentFavorites.add(bookId)
+                } else if (!isAdding) {
+                    currentFavorites.remove(bookId)
+                }
+
+                db.collection("favorites").document(userId)
+                    .set(mapOf("favoriteBooks" to currentFavorites))
+                    .addOnSuccessListener {
+                        // Также сохраняем детали книги в отдельный документ
+                        val book = books.find { it.bookId == bookId }
+                        if (book != null && isAdding) {
+                            val bookJson = gson.toJson(book)
+                            db.collection("favorites_details").document(userId)
+                                .collection("books").document(bookId)
+                                .set(mapOf("bookData" to bookJson))
+                        } else if (!isAdding) {
+                            db.collection("favorites_details").document(userId)
+                                .collection("books").document(bookId)
+                                .delete()
+                        }
+                    }
+            }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BookViewHolder {
         val view = LayoutInflater.from(parent.context)
             .inflate(R.layout.item_book, parent, false)
         prefs = parent.context.getSharedPreferences("favorites", Context.MODE_PRIVATE)
+        auth = FirebaseAuth.getInstance()
+        db = FirebaseFirestore.getInstance()
         loadFavoriteIds()
         return BookViewHolder(view, onBookClick, onFavoriteToggle, this)
     }
@@ -116,7 +197,6 @@ class BookAdapter(
                 cover.setBackgroundColor(android.graphics.Color.LTGRAY)
             }
 
-            // Устанавливаем иконку сердечка
             if (isFavorite) {
                 btnFavorite.setImageResource(R.drawable.ic_favorite_filled)
             } else {

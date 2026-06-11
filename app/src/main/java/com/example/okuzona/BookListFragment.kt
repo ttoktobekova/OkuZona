@@ -1,5 +1,6 @@
 package com.example.okuzona
 
+import android.content.Context
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -23,8 +24,8 @@ class BookListFragment : Fragment() {
     private lateinit var adapter: BookAdapter
     private val allBooks = mutableListOf<Book>()
     private val db = FirebaseFirestore.getInstance()
+    private lateinit var purchasedBooks: Set<String>
 
-    // Для debounce поиска
     private val handler = Handler(Looper.getMainLooper())
     private var searchRunnable: Runnable? = null
 
@@ -39,20 +40,26 @@ class BookListFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Настройка RecyclerView
+        // Загружаем список купленных книг
+        loadPurchasedBooks()
+
         val spanCount = 2
         binding.recyclerViewBooks.layoutManager = GridLayoutManager(requireContext(), spanCount)
 
         adapter = BookAdapter(
             books = emptyList(),
             onBookClick = { selectedBook ->
-                val bundle = Bundle().apply {
-                    putString("pdfUrl", selectedBook.pdfUrl)
-                    putString("bookTitle", selectedBook.title)
-                    putString("bookAuthor", selectedBook.author)
-                    putString("bookImageUrl", selectedBook.imageUrl)
+                // Проверяем, куплена ли книга
+                if (purchasedBooks.contains(selectedBook.bookId)) {
+                    // Если книга куплена, открываем сразу для чтения
+                    openBookForReading(selectedBook)
+                } else {
+                    // Если не куплена, открываем информацию о книге
+                    val bundle = Bundle().apply {
+                        putSerializable("book", selectedBook)
+                    }
+                    findNavController().navigate(R.id.action_bookListFragment_to_informationFragment, bundle)
                 }
-                findNavController().navigate(R.id.action_bookListFragment_to_bookReaderFragment, bundle)
             },
             onFavoriteToggle = { book, isFavorite ->
                 if (isFavorite) {
@@ -68,12 +75,26 @@ class BookListFragment : Fragment() {
         loadBooksFromFirestore()
     }
 
+    private fun loadPurchasedBooks() {
+        val sharedPref = requireContext().getSharedPreferences("purchased", Context.MODE_PRIVATE)
+        purchasedBooks = sharedPref.getStringSet("purchased_books", emptySet()) ?: emptySet()
+    }
+
+    private fun openBookForReading(book: Book) {
+        val bundle = Bundle().apply {
+            putString("pdfUrl", book.pdfUrl)
+            putString("bookTitle", book.title)
+            putString("bookAuthor", book.author)
+            putString("bookImageUrl", book.imageUrl)
+        }
+        findNavController().navigate(R.id.action_bookListFragment_to_bookReaderFragment, bundle)
+    }
+
     private fun setupSearch() {
         binding.searchEditText.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
             override fun afterTextChanged(s: Editable?) {
-                // Debounce: ждём 300 мс после остановки ввода
                 searchRunnable?.let { handler.removeCallbacks(it) }
                 searchRunnable = Runnable { filterBooks(s.toString()) }
                 handler.postDelayed(searchRunnable!!, 300)
@@ -86,7 +107,6 @@ class BookListFragment : Fragment() {
             allBooks.toList()
         } else {
             allBooks.filter { book ->
-                // Поиск по названию ИЛИ по автору (без учёта регистра)
                 book.title.contains(query, ignoreCase = true) ||
                         book.author.contains(query, ignoreCase = true)
             }
@@ -94,7 +114,6 @@ class BookListFragment : Fragment() {
 
         adapter.updateBooks(filtered, requireContext())
 
-        // Показываем сообщение, если ничего не найдено и поиск не пустой
         if (filtered.isEmpty() && query.isNotEmpty()) {
             binding.textEmptySearch.visibility = View.VISIBLE
             binding.recyclerViewBooks.visibility = View.GONE
@@ -122,7 +141,6 @@ class BookListFragment : Fragment() {
                         val book = document.toObject(Book::class.java).copy(bookId = document.id)
                         allBooks.add(book)
                     }
-                    // Обновляем адаптер с передачей context
                     adapter.updateBooks(allBooks, requireContext())
                     filterBooks(binding.searchEditText.text.toString())
                     Toast.makeText(requireContext(), "Загружено книг: ${allBooks.size}", Toast.LENGTH_SHORT).show()
@@ -131,6 +149,12 @@ class BookListFragment : Fragment() {
             .addOnFailureListener { exception ->
                 Toast.makeText(requireContext(), "Ошибка загрузки: ${exception.localizedMessage}", Toast.LENGTH_LONG).show()
             }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // Обновляем список купленных книг при возврате на экран
+        loadPurchasedBooks()
     }
 
     override fun onDestroyView() {
